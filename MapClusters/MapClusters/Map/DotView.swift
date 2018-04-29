@@ -13,10 +13,7 @@ class DotView: MKAnnotationView {
 
     public static let ID: String = "DotAnnotationID"
     public static let ClusterID: String = "DotAnnotationClusterID"
+    public static let DotImage = UIImage(named: "dot")
+    public static let ClusterImage = UIImage(named: "cluster")
     
-    public var defaultimage: UIImage? {
-        get {
-            return UIImage(named: "dot")
-        }
-    }
 }

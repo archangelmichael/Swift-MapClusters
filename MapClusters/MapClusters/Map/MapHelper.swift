@@ -18,7 +18,7 @@ class MapHelper: NSObject {
     private static let maxLon : Double = 180
     
     static func getRandomDotAnnotationsForLocation(location : CLLocationCoordinate2D,
-                                                   totalCount: Int = 5000) -> [DotAnnotation] {
+                                                   totalCount: Int = 500) -> [DotAnnotation] {
         var annotCount = 0
         var annotations : [DotAnnotation] = []
         //First we declare While to repeat adding Annotation
@@ -35,8 +35,8 @@ class MapHelper: NSObject {
     }
     
     static func generateRandomCoordinates(location: CLLocationCoordinate2D,
-                                          min: UInt32 = 10000,
-                                          max: UInt32 = 10000000)-> CLLocationCoordinate2D {
+                                          min: UInt32 = 1000,
+                                          max: UInt32 = 100000)-> CLLocationCoordinate2D {
         //Get the Current Location's longitude and latitude
         let currentLong = location.longitude
         let currentLat = location.latitude

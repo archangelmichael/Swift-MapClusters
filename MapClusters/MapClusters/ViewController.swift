@@ -19,6 +19,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
         self.annotations = MapHelper.getRandomDotAnnotationsForLocation(location: self.vMap.region.center)
         self.vMap.delegate = self
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.reloadAnnotations()
+    }
 
     func mapView(_ mapView: MKMapView,
                  regionDidChangeAnimated animated: Bool) {
@@ -26,6 +31,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     func reloadAnnotations() {
+        self.view.isUserInteractionEnabled = false
         let oldAnnotations = self.vMap.annotations
         var annotationsToRemove : [MKAnnotation] = []
         for annotation in oldAnnotations {
@@ -51,19 +57,37 @@ class ViewController: UIViewController, MKMapViewDelegate {
         }
         
         self.vMap.addAnnotations(annotationsToAdd)
+        self.view.isUserInteractionEnabled = true
     }
     
     func mapView(_ mapView: MKMapView,
                  viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if let dotView = mapView.dequeueReusableAnnotationView(withIdentifier: DotView.ID) as? DotView {
-            dotView.annotation = annotation
-            return dotView
+        if let dot = annotation as? DotAnnotation {
+            if let dotView = mapView.dequeueReusableAnnotationView(withIdentifier: DotView.ID) as? DotView {
+                dotView.annotation = dot
+                return dotView
+            }
+            else {
+                let dotView = DotView(annotation: dot,
+                                      reuseIdentifier: DotView.ID)
+                dotView.image = DotView.DotImage
+                dotView.clusteringIdentifier = DotView.ClusterID
+                dotView.canShowCallout = true
+                return dotView
+            }
+        }
+        else if let cluster = annotation as? MKClusterAnnotation {
+            let clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: DotView.ClusterID)
+                ?? MKAnnotationView(annotation: annotation,
+                                    reuseIdentifier: DotView.ClusterID)
+            
+            clusterView.annotation = cluster
+            clusterView.image = DotView.ClusterImage
+            
+            return clusterView
         }
         else {
-            let dotView = DotView(annotation: annotation,
-                                  reuseIdentifier: DotView.ID)
-            dotView.image = dotView.defaultimage
-            return dotView
+            return nil
         }
     }
 }
