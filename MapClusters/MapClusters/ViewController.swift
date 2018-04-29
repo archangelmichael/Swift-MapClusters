@@ -12,7 +12,7 @@ import MapKit
 class ViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var vMap: MKMapView!
-    var annotations: [DotAnnotation] = []
+    var annotations: [MKAnnotation] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,10 +26,31 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     func reloadAnnotations() {
-//        self.vMap.removeAnnotations(self.vMap.annotations)
-        let newAnnotations = MapHelper.getRandomDotAnnotationsForLocation(location: self.vMap.region.center)
-        self.annotations.append(contentsOf: newAnnotations)
-        self.vMap.addAnnotations(newAnnotations)
+        let oldAnnotations = self.vMap.annotations
+        var annotationsToRemove : [MKAnnotation] = []
+        for annotation in oldAnnotations {
+            if !self.vMap.contains(coordinate: annotation.coordinate) {
+                annotationsToRemove.append(annotation)
+            }
+        }
+        
+        self.vMap.removeAnnotations(annotationsToRemove)
+        
+        let newAnnotations = self.annotations.filter { (annotation) -> Bool in
+            !oldAnnotations.contains(where: { (oldAnnotation) -> Bool in
+                return oldAnnotation.coordinate.latitude == annotation.coordinate.latitude &&
+                    oldAnnotation.coordinate.longitude == annotation.coordinate.longitude
+            })
+        }
+        
+        var annotationsToAdd : [MKAnnotation] = []
+        for annotation in newAnnotations {
+            if self.vMap.contains(coordinate: annotation.coordinate) {
+                annotationsToAdd.append(annotation)
+            }
+        }
+        
+        self.vMap.addAnnotations(annotationsToAdd)
     }
     
     func mapView(_ mapView: MKMapView,

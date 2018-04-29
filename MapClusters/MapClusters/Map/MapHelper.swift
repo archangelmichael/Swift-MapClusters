@@ -11,8 +11,14 @@ import MapKit
 
 class MapHelper: NSObject {
 
+    private static let minLat : Double = -90
+    private static let maxLat : Double = 90
+    
+    private static let minLon : Double = -180
+    private static let maxLon : Double = 180
+    
     static func getRandomDotAnnotationsForLocation(location : CLLocationCoordinate2D,
-                                                   totalCount: Int = 100) -> [DotAnnotation] {
+                                                   totalCount: Int = 5000) -> [DotAnnotation] {
         var annotCount = 0
         var annotations : [DotAnnotation] = []
         //First we declare While to repeat adding Annotation
@@ -29,8 +35,8 @@ class MapHelper: NSObject {
     }
     
     static func generateRandomCoordinates(location: CLLocationCoordinate2D,
-                                          min: UInt32 = 100,
-                                          max: UInt32 = 1000000)-> CLLocationCoordinate2D {
+                                          min: UInt32 = 10000,
+                                          max: UInt32 = 10000000)-> CLLocationCoordinate2D {
         //Get the Current Location's longitude and latitude
         let currentLong = location.longitude
         let currentLat = location.latitude
@@ -42,14 +48,30 @@ class MapHelper: NSObject {
         let randomMetersLatitude = UInt(arc4random_uniform(max) + min)
         let randomMetersLongitude = UInt(arc4random_uniform(max) + min)
         
-        //then Generating Random numbers for different Methods
+        //then Generating Random numbers for different Methods and convert the distance in meters to coordinates by Multiplying number of meters with 1 Meter Coordinate
         let randomMultiplierLatitude = arc4random_uniform(2) == 1 ? 1.0 : -1.0
         let metersCordLatitude = randomMultiplierLatitude * meterCord * Double(randomMetersLatitude) / 1.5
         let randomMultiplierLongitude = arc4random_uniform(2) == 1 ? 1.0 : -1.0
         let metersCordLongitude = randomMultiplierLongitude * meterCord * Double(randomMetersLongitude)
-        //Then we convert the distance in meters to coordinates by Multiplying number of meters with 1 Meter Coordinate
-        return CLLocationCoordinate2D(latitude: currentLat + metersCordLatitude,
-                                      longitude: currentLong + metersCordLongitude)
+        
+        var newLat = currentLat + metersCordLatitude
+        if newLat < minLat {
+            newLat = minLat
+        }
+        if newLat > maxLat {
+            newLat = maxLat
+        }
+        
+        var newLon = currentLong + metersCordLongitude
+        if newLon < minLon {
+            newLon = minLon
+        }
+        if newLon > maxLon {
+            newLon = maxLon
+        }
+        
+        return CLLocationCoordinate2D(latitude: newLat,
+                                      longitude: newLon)
     }
     
     static func randomBetweenNumbers(firstNum: CGFloat,

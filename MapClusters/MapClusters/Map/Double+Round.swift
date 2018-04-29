@@ -16,11 +16,8 @@ extension Double {
     }
 }
 
-extension MKCoordinateRegion {
-    /// confirms that a region contains a location
-    func contains(_ coordinate: CLLocationCoordinate2D) -> Bool {
-        let deltaLat = abs(self.center.latitude - coordinate.latitude)
-        let deltalong = abs(self.center.longitude - coordinate.longitude)
-        return self.span.latitudeDelta/2.0 >= deltaLat && self.span.longitudeDelta/2.0 >= deltalong
+extension MKMapView {
+    func contains(coordinate: CLLocationCoordinate2D) -> Bool {
+        return MKMapRectContainsPoint(self.visibleMapRect, MKMapPointForCoordinate(coordinate))
     }
 }
